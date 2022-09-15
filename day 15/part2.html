@@ -1,0 +1,32 @@
+<div id="display" style="font-size: 25px; font-family: roboto; color: #41cc3c; background: #f0f0f0; border: 1px solid #dbdbdb; border-radius: 5px; padding: 10px; margin: 10px; display: inline-block"></div>
+<script id="in" type="text/input"></script>
+<script id="in2" type="text/input"></script>
+<script>
+    var out = 0;
+    
+    var genA = 591;
+    var genB = 393;
+    var factA = 16807;
+    var factB = 48271;
+    var div = 2147483647;
+    
+    for(var i=0; i<5000000; i++){
+        do{
+            genA = genA*factA;
+            genA = genA%div;
+        }while(genA % 4 != 0);
+        do{
+            genB = genB*factB;
+            genB = genB%div;
+        }while(genB % 8 != 0);
+        
+//        var a = genA.toString(2);
+//        a=a.substr(a.length-16);
+//        var b = genB.toString(2);
+//        b=b.substr(b.length-16);
+        
+        if((genA & 0xFFFF) == (genB & 0xFFFF) )out++;
+    }
+    
+    document.getElementById("display").innerHTML = out;
+</script>

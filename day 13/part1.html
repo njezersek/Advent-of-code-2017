@@ -1,0 +1,102 @@
+<div id="display" style="font-size: 25px; font-family: roboto; color: #41cc3c; background: #f0f0f0; border: 1px solid #dbdbdb; border-radius: 5px; padding: 10px; margin: 10px; display: inline-block"></div>
+<script id="in" type="text/input">0: 3
+1: 2
+2: 6
+4: 4
+6: 4
+8: 8
+10: 6
+12: 8
+14: 5
+16: 6
+18: 8
+20: 8
+22: 12
+24: 6
+26: 9
+28: 8
+30: 12
+32: 12
+34: 17
+36: 12
+38: 8
+40: 12
+42: 12
+44: 10
+46: 12
+48: 12
+50: 12
+52: 14
+54: 14
+56: 10
+58: 14
+60: 12
+62: 14
+64: 14
+66: 14
+68: 14
+70: 14
+72: 14
+74: 14
+76: 14
+86: 14
+94: 20
+96: 18</script>
+<script id="in2" type="text/input">0: 3
+1: 2
+4: 4
+6: 4</script>
+<script>
+    var input = document.getElementById("in2").innerHTML;
+    var out = 0;
+    
+    var packet = -7;
+    
+    // depth, range, scanner, speed
+    input = input.split("\n");
+    input = input.map(a => a.split(": "));
+    input = input.map(a => a.map(b => Number(b)));
+    var scanners = new Array();
+    for(var i=0; i<input.length; i++){
+        scanners[input[i][0]] = {depth: input[i][0], range: input[i][1], scanner: 0, speed: 1};
+    }
+    
+    function move(){
+        
+        packet++;
+        if(scanners[packet] !== undefined){
+            if(scanners[packet].scanner == 0)out += scanners[packet].range*scanners[packet].depth;
+            //if(scanners[packet].scanner == 0)out += 1;
+            console.log(packet, scanners[packet]);
+        }
+
+        for(var i=0; i<scanners.length; i++){
+            if(scanners[i] !== undefined){
+                scanners[i].scanner += scanners[i].speed;
+                if(scanners[i].scanner >= scanners[i].range-1)scanners[i].speed *= -1;
+                if(scanners[i].scanner <= 0)scanners[i].speed *= -1;
+            }
+        }
+        
+        
+    }
+    
+    for(var i=0; i<scanners.length; i++)move();
+    
+    document.getElementById("display").innerHTML = out;
+    
+    //primeri
+    function examples(){
+        var arr = [3,1,4,7,2];
+        
+        var nov = arr.map((value, index) => value+index); //vrne nov arr kjer poveča vsak element v arr za index
+        var nov = arr.concat([3,4,5]); // združi arr in []
+        arr.reverse(); //obrne arr prvi bodo zadnji in zadnji bodo prvi
+        arr.fill(0); //nastavi vse na 0
+        var nov = arr.filter(value => value<10); //izbrisi vse elemente ki so vecji od 10
+        var bool = arr.every(value => value < 10); //preveri da vsi elementi ustrezajo pogoju
+        var bool = arr.some(value => value < 10); //preveri da vsaj en element ustreza pogoju
+        var bool = arr.includes("test"); //preveri da arr vsebuje test
+        arr.forEach(function(value, i, arr){console.log(value)}); //loopaj cez vse elemente
+    }
+</script>

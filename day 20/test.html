@@ -1,0 +1,87 @@
+<canvas id="canvas" width="1000" height="1000"></canvas>
+<script>
+    let c = document.getElementById("canvas");
+    let ctx = c.getContext("2d");
+    
+    
+    let Particle = function(p,v,a){
+        this.p = p;
+        this.v = v;
+        this.a = a;
+        
+        this.update = () => {
+            this.p.x += this.v.x += this.a.x;
+            this.p.y += this.v.y += this.a.y;
+        }
+        
+        this.pos = (t) => {
+            //let x = this.p.x + this.v.x*t + (this.a.x/2)*t*(t+1);
+            //let y = this.p.y + this.v.y*t + (this.a.y/2)*t*(t+1);
+            //let x = (this.a.x/2)*t**2 + this.v.x*t + this.p.x + (this.a.x/2)*t;
+            //let y = (this.a.y/2)*t**2 + this.v.y*t + this.p.y + (this.a.y/2)*t;
+            
+            let x = (this.a.x/2)*t**2 + (this.v.x+this.a.x/2)*t + this.p.x;
+            let y = (this.a.y/2)*t**2 + (this.v.y+this.a.y/2)*t + this.p.y;
+            console.log("0", x,y);
+            ctx.fillStyle = "#f00";
+            ctx.fillRect(x*10,y*10,2,2);
+        }
+        
+        this.pos2 = (t) => {
+            let px = this.p.x;
+            let py = this.p.y;
+            let vx = this.v.x;
+            let vy = this.v.y;
+            let ax = this.a.x;
+            let ay = this.a.y;
+            
+            for(let i = 0; i<t; i++){
+                px += vx += ax;
+                py += vy += ay;
+            }
+            
+            ctx.fillStyle = "#0F0";
+            ctx.fillRect(px*10, py*10,2,2);
+            console.log("1", px, py)
+        }
+        
+        this.render = () => {
+        }
+    }
+    
+    let par = new Particle({x: 0, y: 0}, {x: 0, y: 0}, {x: 2, y: 2});
+    let par1 = new Particle({x: 0+20, y: 0+20}, {x: 0, y: 5}, {x: 2, y: 0});
+    let par2 = new Particle({x: 18+20, y: 3+20}, {x: 0, y: 4}, {x: -1, y: 0});
+    
+    function willCollide(p2, p1){
+        let ax = (p2.a.x-p1.a.x)/2;
+        let bx = (2*p2.v.x+p2.a.x-2*p1.v.x-p1.a.x)/2;
+        let cx = (p2.p.x-p1.p.x);
+        
+        let ay = (p2.a.y-p1.a.y)/2;
+        let by = (2*p2.v.y+p2.a.y-2*p1.v.y-p1.a.y)/2;
+        let cy = (p2.p.y-p1.p.y);
+        
+        let Dx = ((2*p2.v.x+p2.a.x-2*p1.v.x-p1.a.x)/2)**2 - 2*(p2.a.x-p1.a.x)*(p2.p.x-p1.p.x);
+        let Dy = ((2*p2.v.y+p2.a.y-2*p1.v.y-p1.a.y)/2)**2 - 2*(p2.a.y-p1.a.y)*(p2.p.y-p1.p.y);
+
+        console.log(Dx, Dy, ax, ay);
+    }
+    
+    let i = -20;
+    function tick(){
+        par1.pos(i);
+        par2.pos(i);
+        
+        //par.pos2(i);
+        //par.pos(i);
+        i++;
+        if(i<20)setTimeout(tick, 100);
+    }
+    
+    willCollide(par1, par2);
+    
+    tick();
+    
+    //for(let i=0; i<100; i++)par.pos(i);
+</script>

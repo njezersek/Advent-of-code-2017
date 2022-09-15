@@ -1,0 +1,61 @@
+<pre id="demo"></pre>
+<script>
+    var input = 325489;
+    
+    var out = "";
+    var velikost = 30;
+    var tabela = Array(velikost*velikost);
+    posX = Math.floor(velikost/2);
+    posY = Math.floor(velikost/2);
+    var zavoj = 0;
+    var stranica = 1;
+    for(var i=0; i<tabela.length; i++){
+        if(tabela[i] == undefined)tabela[i] = 0;
+    }
+    
+    var s = 0;
+    for(var j=1; j<=input; j++){
+        var value = 0;
+        value += tabela[posY*velikost+posX+1];
+        value += tabela[(posY+1)*velikost+posX+1];
+        value += tabela[(posY-1)*velikost+posX+1];
+        value += tabela[posY*velikost+posX-1];
+        value += tabela[(posY+1)*velikost+posX-1];
+        value += tabela[(posY-1)*velikost+posX-1];
+        value += tabela[(posY+1)*velikost+posX];
+        value += tabela[(posY-1)*velikost+posX];
+        if(j==1)value = 1;
+        tabela[posY*velikost+posX] = value;
+        if(value >= input){
+            console.log(value)
+            break;
+        }
+        obrni();
+        s++;
+        if(s >= stranica){
+            s = 0;
+            zavoj++;
+
+            if(zavoj >= 4){
+                zavoj = 0;
+            }
+            if(zavoj%2 == 0)stranica++;
+        }
+    }
+    
+    function obrni(){
+        if(zavoj == 0)posX++;
+        else if(zavoj == 1)posY--;
+        else if(zavoj == 2)posX--;
+        else if(zavoj == 3)posY++;
+    }
+    
+    for(var i=0; i<tabela.length; i++){
+        if(tabela[i] == undefined)tabela[i] = ".";
+        out += tabela[i]+"\t";
+        if((i+1)%velikost == 0)out += "\n";
+    }
+    document.getElementById("demo").innerHTML = out;
+    
+    
+</script>

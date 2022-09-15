@@ -1,0 +1,41 @@
+<pre id="in">0 	2	7	0</pre>
+<script>
+var input = document.getElementById('in').innerHTML;
+input = input.split("	"); //tole ti bo pomagal da ti ni treba prepisovat v array namesto "    " (tab) (sam pazi copy pasti ta znak ker drgac mas loh probleme) lahko uporabis tudi "\n" (nova vrstica)
+input = input.map(val => Number(val)); // spremeni besede v stevilke
+
+var kazalec = 0;
+var spomin = [];
+var counter = 0;
+var iztopi_iz_loopa = false;
+
+while(iztopi_iz_loopa == false){ 
+    //najdi max stevilo
+    var mesto_max_stevila = 0;
+    var max_stevilo = 0;
+    for(var i = 0; i < input.length; i++){
+        if(input[i] > max_stevilo){
+            mesto_max_stevila = i;
+            max_stevilo = input[i];
+        }
+    }
+    kazalec = mesto_max_stevila;
+    
+    input[kazalec] = 0;
+    //razdeli vrednosti
+    for(var x = 0; x < max_stevilo; x++){
+        kazalec++;
+        if(kazalec >= input.length) kazalec = 0;
+        
+        input[kazalec]++;
+    }
+    //poglej ce je ze gdaj bila taka scena v spominu
+    iztopi_iz_loopa = spomin.includes(input.join(","));
+    
+    spomin.push(input.join(","));
+    console.log("spomin", input.join(","));
+
+    counter++;
+}
+console.log("rezultat", counter);
+</script>

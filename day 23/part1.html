@@ -1,0 +1,152 @@
+<div id="display" style="font-size: 25px; font-family: roboto; color: #41cc3c; background: #f0f0f0; border: 1px solid #dbdbdb; border-radius: 5px; padding: 10px; margin: 10px; display: inline-block"></div>
+<script id="in" type="text/input">set b 57
+set c b
+jnz a 2
+jnz 1 5
+mul b 100
+sub b -100000
+set c b
+sub c -17000
+set f 1
+set d 2
+set e 2
+set g d
+mul g e
+sub g b
+jnz g 2
+set f 0
+sub e -1
+set g e
+sub g b
+jnz g -8
+sub d -1
+set g d
+sub g b
+jnz g -13
+jnz f 2
+sub h -1
+set g b
+sub g c
+jnz g 2
+jnz 1 3
+sub b -17
+jnz 1 -23</script>
+<script id="in2" type="text/input"></script>
+<script>
+    var input = document.getElementById("in").innerHTML;
+    var out = 0;
+    
+    input = input.split("\n");
+    //input = input.map(a => a.split(" "));
+    var pc = 0;
+    var registers = new Array(26);
+    registers.fill(0);
+    var stack = [];
+    var registerAddresses = "abcdefghijklmnoprstquvwxyz".split("");
+    var running = true;
+    while(running){
+        step();
+    }
+    
+    function step(){
+        var instruction = input[pc].split(" ")
+        //console.log(pc, instruction, registers);
+        if(instruction[0] == "set"){
+            set(instruction[1],instruction[2]);
+        }
+        if(instruction[0] == "add"){
+            add(instruction[1],instruction[2]);
+        }
+        if(instruction[0] == "sub"){
+            sub(instruction[1],instruction[2]);
+        }
+        if(instruction[0] == "mul"){
+            mul(instruction[1],instruction[2]);
+            out++;
+        }
+        if(instruction[0] == "mod"){
+            mod(instruction[1],instruction[2]);
+        }
+        if(instruction[0] == "snd"){
+            snd(instruction[1]);
+        }
+        if(instruction[0] == "rcv"){
+            var x = rcv(instruction[1]);
+            //if(x){alert(x); running=false;}
+        }
+        if(instruction[0] == "jgz"){
+            jgz(instruction[1], instruction[2]);
+        }
+        if(instruction[0] == "jnz"){
+            jnz(instruction[1], instruction[2]);
+        }
+        pc++;
+        //while(pc >= input.length)pc -= input.length;
+        //while(pc < 0)pc = input.length+pc;
+        if(pc >= input.length)running = false;
+    }
+    
+    function set(reg, val){
+        var index = registerAddresses.indexOf(reg);
+        var Y = get(val);
+        registers[index] = Y;
+    }
+    
+    function get(reg){
+        var index = registerAddresses.indexOf(reg);
+        if(index < 0)return Number(reg);
+        return registers[index];
+    }
+    
+    function add(reg, val){
+        var index = registerAddresses.indexOf(reg);
+        var Y = get(val);
+        registers[index] += Y;
+    }
+    
+    function sub(reg, val){
+        var index = registerAddresses.indexOf(reg);
+        var Y = get(val);
+        registers[index] -= Y;
+    }
+    
+    function mul(reg, val){
+        var index = registerAddresses.indexOf(reg);
+        var Y = get(val);
+        registers[index] *= Y;
+    }
+    
+    function mod(reg, val){
+        var index = registerAddresses.indexOf(reg);
+        var Y = get(val);
+        registers[index] %= Y;
+    }
+    
+    function snd(val){
+        var X = get(val);
+        stack.push(X);
+    }
+    
+    function rcv(val){
+        if(val != 0){
+            return stack.pop();
+        }
+        return false;
+    }
+    
+    function jgz(reg, val){
+        var X = get(reg);
+        var Y = get(val);
+        if(Y >= 1)Y--;
+        if(X > 0)pc += Y-1;
+    }
+    
+    function jnz(reg, val){
+        var X = get(reg);
+        var Y = get(val);
+        if(Y >= 0)Y--;
+        if(X != 0)pc += Y-1;
+    }
+    
+    document.getElementById("display").innerHTML = out;
+</script>

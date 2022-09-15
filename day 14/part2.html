@@ -1,0 +1,136 @@
+<div id="display" style="font-size: 25px; font-family: roboto; color: #41cc3c; background: #f0f0f0; border: 1px solid #dbdbdb; border-radius: 5px; padding: 10px; margin: 10px; display: inline-block"></div>
+<pre id="de"></pre>
+<script id="in" type="text/input"></script>
+<script id="in2" type="text/input"></script>
+<script>
+    var input = document.getElementById("in").innerHTML;
+    var out = 0;
+    
+    input = "hwlqcszp";
+    //input = "flqrgnkx";
+    
+    var sum = 0;
+    
+    var grid = [];
+    //input = input.map(a => a.split(" "));
+    
+    for(var i=0; i<128; i++){
+        var bytes = [];
+        var hex = knothash(input+"-"+i);
+        for(var j=0; j< hex.length-1; j+=2){
+            var byte = "00000000";
+            byte += parseInt(hex.substr(j, 2), 16).toString(2);
+            byte = byte.substr(byte.length-8);
+            bytes.push(byte);
+        }
+        grid.push(bytes.join("").split(""));
+    }
+    
+    count();
+    
+    var html = "";
+    for(var i=0; i<grid.length; i++){
+        html += grid[i]+"\n";
+        for(var j=0; j<grid[i].length; j++){
+            
+        }
+    }
+    document.getElementById('de').innerHTML = html;
+    
+    
+    function fill(x,y){
+        if(!(x < grid.length && x >= 0 && y<grid[x].length && y >= 0))return;
+        if(grid[x][y] == "2")return;
+        if(grid[x][y] != "1")return;
+        grid[x][y] = "2";
+        fill(x+1,y);
+        fill(x-1,y);
+        fill(x,y+1);
+        fill(x,y-1);
+        return;
+    }
+    
+    function count(){
+        var counter = 0;
+        for(var i=0; i<grid.length; i++){
+            for(var j=0; j<grid[i].length; j++){
+                if(grid[i][j] == "1"){
+                    counter++;
+                    fill(i,j);
+                }
+            }
+        }
+        
+        sum = counter;
+    }
+    
+    function knothash(str){
+        var input = str;
+        var out = 0;
+
+        input = input.split("").map(a => a.charCodeAt(0));
+        input = input.concat([17, 31, 73, 47, 23]);
+
+        var steps = input.map(a => Number(a));
+
+        var position = 0;
+        var list = new Array(256);
+        var skip = 0;
+        list.fill(0);
+        list = list.map((val, index) => index);
+
+        for(var n=0; n<64; n++){
+            for(var i=0; i<steps.length; i++){
+                var step = steps[i];
+                var index1 = position;
+                var length1 = step;
+                var index2 = -1;
+                var length2 = 0;
+                if(length1+position > list.length){
+                    length1 = list.length - position;
+                    var index2 = 0;
+                    var length2 = step-length1;
+                }
+
+                var listPart1 = list.slice(index1, length1+index1);
+                var listPart2 = list.slice(index2, length2+index2);
+
+                var listPart = listPart1.concat(listPart2);
+                listPart.reverse();
+
+                for(var j=0; j<listPart.length; j++){
+                    if(index1+j < list.length){
+                        list.splice(index1+j,1,listPart[j])
+                    }
+                    else{
+                        list.splice((index1+j)-list.length,1,listPart[j])
+                    }
+                }
+
+                //console.log(list, listPart, position);
+
+                position += step;
+                position += skip;
+                position = position%list.length;
+                skip++;
+            }
+        }
+
+        //list je zdaj sparse hash
+        var denseHash = [];
+        for(var i=0; i<list.length; i += 16){
+            var byte = 0;
+            for(var j=0; j<16; j++){
+                byte = byte^list[i+j];
+            }
+            var hex = "00"+byte.toString(16);
+            denseHash.push(hex.substring(hex.length-2, hex.length));
+        }
+        
+        out = denseHash.join("");
+        
+        return out;
+    }
+    
+    document.getElementById("display").innerHTML = sum;
+</script>

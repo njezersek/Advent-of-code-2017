@@ -1,0 +1,65 @@
+<div id="display" style="font-size: 25px; font-family: roboto; color: #41cc3c; background: #f0f0f0; border: 1px solid #dbdbdb; border-radius: 5px; padding: 10px; margin: 10px; display: inline-block"></div>
+
+<pre id="input">14	0	15	12	11	11	3	5	1	6	8	4	9	1	8	4</pre>
+
+<script>
+    var out = 0;
+    var sum = 0;
+    var ok = true;
+    var input = document.getElementById("input").innerHTML;
+    input = input.split("	");
+    console.log(input);
+    //input = [0,2,7,0];
+    var pointer = 0;
+    var statest = [];
+    var cycles = 0;
+    var memory = input.map(val => Number(val));
+    var statesp = [];
+    var decPointer = pointer;
+    
+    while(ok){
+        var max = 0;
+        for(var i=0; i<memory.length; i++){
+            if(memory[i] > max){max = memory[i]; pointer = i}
+        }
+        decPointer = pointer;
+        
+        
+        memory[decPointer] = 0;
+        for(var n =0; n<max; n++){
+            pointer++;
+            if(pointer >= memory.length){
+                pointer = 0;
+            }
+            memory[pointer]++;
+        }
+        
+        
+        cycles++;
+        
+        if(statest.includes(memory.join(","))){
+            ok = false;
+            out = cycles-statesp[statest.indexOf(memory.join(","))];
+        }
+        statest.push(memory.join(","));
+        statesp.push(cycles);
+    }
+    
+    document.getElementById("display").innerHTML = out;
+    
+    
+    //primeri
+    function examples(){
+        var arr = [3,1,4,7,2];
+        
+        var nov = arr.map((value, index) => value+index); //vrne nov arr kjer poveča vsak element v arr za index
+        var nov = arr.concat([3,4,5]); // združi arr in []
+        arr.reverse(); //obrne arr prvi bodo zadnji in zadnji bodo prvi
+        arr.fill(0); //nastavi vse na 0
+        var nov = arr.filter(value => value<10); //izbrisi vse elemente ki so vecji od 10
+        var bool = arr.every(value => value < 10); //preveri da vsi elementi ustrezajo pogoju
+        var bool = arr.some(value => value < 10); //preveri da vsaj en element ustreza pogoju
+        var bool = arr.includes("test"); //preveri da arr vsebuje test
+        arr.forEach(function(value, i, arr){console.log(value)}); //loopaj cez vse elemente
+    }
+</script>

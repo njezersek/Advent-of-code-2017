@@ -1,0 +1,65 @@
+<script>
+var input = [0,2,7,0];
+
+var max_stevilo = 0;
+var mesto_max_stevila = 0;
+var kazalec = 0;
+var spomin = [];
+var counter = 0;
+var iztopi_iz_loopa = false;
+
+while(iztopi_iz_loopa == false){ 
+    //najdi max stevilo
+    for(var i = 0; i < input.length; i++){
+        if(input[i] > max_stevilo){
+            max_stevilo = input[i];
+            mesto_max_stevila = i;
+            kazalec = mesto_max_stevila;
+        }
+    }
+    input[kazalec] = 0;
+    //razdeli vrednosti
+    /* tukaj je napaka v foor loopu ker gre samo enkrat cez input mora pa iti veckrat ce je vecje stevilo za razdeliti
+    for(var x = 0; x < input.length; x++){
+        kazalec++;
+        if(kazalec >= input.length) kazalec = 0;
+
+        if(x == input.length-1 && max_stevilo%(input.length-1) != 0){
+            input[kazalec] += max_stevilo%(input.length-1);
+        }
+        else {
+            input[kazalec] += Math.floor(max_stevilo/(input.length-1));
+        }
+    }
+    */
+    for(var x = 0; x < max_stevilo; x++){
+        kazalec++;
+        if(kazalec >= input.length) kazalec = 0;
+        
+        input[kazalec]++;
+    }
+    //poglej ce je ze gdaj bila taka scena v spominu
+    for(var a = 0; a < spomin.length; a++){
+        /* napaka ne mores kr takole primerjati arrayev ker so objekti!
+        to ne bo nikoli true
+        da lahko primerjas arraye je najlazje da jih pretvoris v string
+        
+        if(input == spomin[a]){
+        */
+        if(input.join(",") == spomin[a].join(",")){
+            iztopi_iz_loopa = true;
+        }
+    }
+    /* se ena napaka ko pushas input uresnici shranis samo naslov kje se nahaja ta array in ko ga spremenis se tudi tukaj spremeni
+    spomin.push(input);
+    */
+    spomin.push(input.slice());
+    console.log("spomin", input.slice());
+
+    counter++;
+    max_stevilo = 0;
+    //console.log(input);
+}
+console.log(spomin);
+console.log(counter);
+</script>

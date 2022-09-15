@@ -1,0 +1,115 @@
+<div id="display" style="font-size: 25px; font-family: roboto; color: #41cc3c; background: #f0f0f0; border: 1px solid #dbdbdb; border-radius: 5px; padding: 10px; margin: 10px; display: inline-block"></div>
+<script id="in" type="text/input">....##.#.#.#...#.##.##.#.
+##.####..###..#.#.#.###.#
+.#.#...#.##....#......###
+...#.....##.###....##.###
+#.########.#.#####..##.#.
+.#..#..#.#..#....##.#...#
+.....#.##..#.#.....##..##
+....###....###....###.#..
+..#..#..#..#.##.#.#..##.#
+.##......#...##.#.#.##.#.
+.#####.#.#.##...###...#..
+#..###..#....#....##..#..
+###..#....#.##.##.....#..
+##.##..#.##.#..#####.#.#.
+#....#.######.#.#.#.##.#.
+###.##.#.######.#..###.#.
+#...###.#.#..##..####....
+###...##.###..###..##..#.
+..##.###...#.....##.##.##
+..##..#.###.###.....#.###
+#..###.##.#.###......####
+#.#...#..##.###.....##.#.
+#..#.##...##.##....#...#.
+..#.#..#..#...##.#..###..
+......###....#.....#....#</script>
+<script id="in2" type="text/input">..#
+#..
+...</script>
+<script>
+    var input = document.getElementById("in").innerHTML;
+    var out = 0;
+    
+    var carrier = {
+        x: 0,
+        y: 0,
+        direction: 0,
+        move: function(){
+            if(map[[this.x, this.y]] == "#"){
+                //turn right
+                this.direction++;
+                this.direction %= 4
+                //Infected nodes become flagged
+                map[[this.x, this.y]] = "F";
+                
+            }
+            else if(map[[this.x, this.y]] == "W"){
+                //do not turn
+                //Weakened nodes become infected
+                map[[this.x, this.y]] = "#";
+                out++;
+            }
+            else if(map[[this.x, this.y]] == "F"){
+                //reverse direction
+                this.direction += 2;
+                this.direction %= 4
+                //Flagged nodes become clean
+                map[[this.x, this.y]] = ".";
+            }
+            else{
+                //turn left
+                this.direction--;
+                this.direction += 4;
+                this.direction %= 4
+                //Clean nodes become weakened
+                map[[this.x, this.y]] = "W";
+            }
+            
+            //move
+            if(this.direction == 0)this.y--;
+            if(this.direction == 1)this.x++;
+            if(this.direction == 2)this.y++;
+            if(this.direction == 3)this.x--;
+            
+            //display();
+        }
+    }
+    
+    input = input.split("\n");
+    input = input.map(a => a.split(""));
+    
+    
+    var map = [];
+    
+    //fill the map
+    for(var i=0; i<input.length; i++){
+        for(var j=0; j<input[i].length; j++){
+            let x = j-Math.floor(input.length/2);
+            let y = i-Math.floor(input.length/2);
+            map[[x,y]] = input[i][j];
+        }
+    }
+    
+    for(let n=0; n<10000000; n++){
+        carrier.move();
+    }
+    
+    function display(){
+        //console.clear();
+        for(let y=-12; y<13; y++){
+            let line = "";
+            for(let x=-12; x<13; x++){
+                let state = map[[x,y]];
+                if(state == undefined) state = ".";
+                if(x == carrier.x && y == carrier.y){
+                    line += "[" + state + "]";
+                }
+                else line += " " + state + " ";
+            }
+            console.log(line);
+        }
+    }
+    document.getElementById("display").innerHTML = out;
+
+</script>

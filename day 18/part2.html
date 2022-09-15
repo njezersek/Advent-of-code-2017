@@ -1,0 +1,185 @@
+<meta charset="utf-8">
+<div id="display" style="font-size: 25px; font-family: roboto; color: #41cc3c; background: #f0f0f0; border: 1px solid #dbdbdb; border-radius: 5px; padding: 10px; margin: 10px; display: inline-block"></div>
+<script id="in" type="text/input">set i 31
+set a 1
+mul p 17
+jgz p p
+mul a 2
+add i -1
+jgz i -2
+add a -1
+set i 127
+set p 826
+mul p 8505
+mod p a
+mul p 129749
+add p 12345
+mod p a
+set b p
+mod b 10000
+snd b
+add i -1
+jgz i -9
+jgz a 3
+rcv b
+jgz b -1
+set f 0
+set i 126
+rcv a
+rcv b
+set p a
+mul p -1
+add p b
+jgz p 4
+snd a
+set a b
+jgz 1 3
+snd b
+set f 1
+add i -1
+jgz i -11
+snd a
+jgz f -16
+jgz a -19</script>
+<script id="in2" type="text/input">snd 1
+set a 1
+add a 2
+mul a a
+mod a 5
+snd a
+set a 0
+rcv a
+jgz a -1
+set a 1
+jgz a -2</script>
+<script>
+    var input = document.getElementById("in").innerHTML;
+    var out = 0;
+    
+    input = input.split("\n");
+    //input = input.map(a => a.split(" "));
+    
+    
+    var Program = function(input, id){
+        this.id = id;
+        this.code = input;
+        this.registers = new Array(26);
+        this.registers.fill(0);
+        this.registerAddresses = "abcdefghijklmnoprstquvwxyz".split("");
+        this.pc = 0;
+        this.stack = [];
+        this.running = true;
+        this.otherProgram = null;
+        this.counter = 0;
+        this.deadLock = false;
+        
+        this.step = function(){
+            var instruction = this.code[this.pc].split(" ")
+            if(instruction[0] == "set"){
+                this.set(instruction[1],instruction[2]);
+            }
+            if(instruction[0] == "add"){
+                this.add(instruction[1],instruction[2]);
+            }
+            if(instruction[0] == "mul"){
+                this.mul(instruction[1],instruction[2]);
+            }
+            if(instruction[0] == "mod"){
+                this.mod(instruction[1],instruction[2]);
+            }
+            if(instruction[0] == "snd"){
+                this.snd(instruction[1]);
+            }
+            if(instruction[0] == "rcv"){
+                var x = this.rcv(instruction[1]);
+                //if(x){alert(x); running=false;}
+            }
+            if(instruction[0] == "jgz"){
+                this.jgz(instruction[1], instruction[2]);
+            }
+            
+            console.log(this.id, this.pc, instruction.join(" "), "registers: ", this.registers.join(", "), "stack: ", this.stack.join(", "));
+            this.pc++;
+            //while(pc >= input.length)pc -= input.length;
+            //while(pc < 0)pc = input.length+pc;
+            if(this.pc >= this.code.length)this.running = false;
+        }
+        
+        this.set = function(reg, val){
+            var index = this.registerAddresses.indexOf(reg);
+            var Y = this.get(val);
+            this.registers[index] = Y;
+        }
+
+        this.get = function(reg){
+            var index = this.registerAddresses.indexOf(reg);
+            if(index < 0)return Number(reg);
+            return this.registers[index];
+        }
+
+        this.add = function(reg, val){
+            var index = this.registerAddresses.indexOf(reg);
+            var Y = this.get(val);
+            this.registers[index] += Y;
+        }
+
+        this.mul = function(reg, val){
+            var index = this.registerAddresses.indexOf(reg);
+            var Y = this.get(val);
+            this.registers[index] *= Y;
+        }
+
+        this.mod = function(reg, val){
+            var index = this.registerAddresses.indexOf(reg);
+            var Y = this.get(val);
+            this.registers[index] %= Y;
+        }
+
+        this.snd = function(val){
+            var X = this.get(val);
+            this.stack.push(X);
+            this.counter++;
+        }
+
+        this.rcv = function(val){
+            this.deadLock = false;
+            if(val != 0){
+                if(this.otherProgram.stack.length > 0){
+                    return this.otherProgram.stack.pop();
+                }
+                else{
+                    this.pc--;
+                    this.deadLock = true;
+                }
+            }
+            return false;
+        }
+
+        this.jgz = function(reg, val){
+            var X = this.get(reg);
+            var Y = this.get(val);
+            if(Y >= 1)Y--;
+            if(X > 0)this.pc += Y-1;
+        }
+        
+        this.set("p", id);
+    }
+    
+    var p0 = new Program(input, 0);
+    var p1 = new Program(input, 1);
+    
+    p0.otherProgram = p1;
+    p1.otherProgram = p0;
+    
+    while(p0.running || p1.running){
+        p0.step();
+        p1.step();
+        
+        if(p0.deadLock && p1.deadLock){
+            p0.running = false;
+            p1.running = false;
+        }
+    }
+    
+    document.getElementById("display").innerHTML = p1.counter;
+</script>
